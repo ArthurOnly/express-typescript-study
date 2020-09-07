@@ -1,11 +1,16 @@
-import { Router, Request, Response, response } from "express"
+import { Router, Request, Response, NextFunction } from "express"
+import { generateToken, tokenMiddleware } from "../helpers/jwt"
 
 const router = Router()
 
 router.get("/", (request: Request, response: Response) => {
-  const data = request.body
-  console.log(data)
+  const token = generateToken({ user: "arthur" }, "token")
+  const refresh = generateToken({ user: "arthur" }, "refresh_token")
+  return response.send(`${token} & ${refresh}`)
+})
+
+router.post("/", tokenMiddleware, (request: Request, response: Response) => {
   return response.send("Success")
 })
 
-export { router }
+export { router as usersController }
