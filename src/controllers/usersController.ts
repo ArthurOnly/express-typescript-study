@@ -3,10 +3,8 @@ import { generateToken, tokenMiddleware } from "../helpers/jwt"
 
 const router = Router()
 
-router.get("/", (request: Request, response: Response) => {
-  const token = generateToken({ user: "arthur" }, "token")
-  const refresh = generateToken({ user: "arthur" }, "refresh_token")
-  return response.send(`${token} & ${refresh}`)
+router.get("/", async (request: Request, response: Response) => {
+  const { username, password } = request.body
 })
 
 router.post("/", tokenMiddleware, (request: Request, response: Response) => {
