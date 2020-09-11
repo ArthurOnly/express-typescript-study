@@ -1,7 +1,24 @@
-import { DataTypes } from "sequelize"
+import { DataTypes, Model, Optional } from "sequelize"
 import { database } from "../database/database"
 
-const User = database.define("user", {
+interface UserAttributes {
+  id: number
+  name: string
+  password: String
+  email: String
+}
+
+interface UserCreationAttributes extends Optional<UserAttributes, "id"> {}
+
+interface UserInstance
+  extends Model<UserAttributes, UserCreationAttributes>,
+    UserAttributes {}
+
+const User = database.define<UserInstance>("user", {
+  id: {
+    primaryKey: true,
+    type: DataTypes.INTEGER.UNSIGNED,
+  },
   name: DataTypes.STRING,
   email: DataTypes.STRING,
   password: {

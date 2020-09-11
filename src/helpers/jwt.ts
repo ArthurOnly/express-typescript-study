@@ -53,8 +53,6 @@ function tokenMiddleware(req: Request, res: Response, next: NextFunction) {
   const token = verifyToken(tokens[0], "token")
   const refresh_token = verifyToken(tokens[1], "refresh_token")
 
-  console.log(token, refresh_token)
-
   if (!token && !refresh_token) return res.sendStatus(403)
 
   if (!token && refresh_token) {
