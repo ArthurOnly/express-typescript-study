@@ -14,17 +14,22 @@ interface UserInstance
   extends Model<UserAttributes, UserCreationAttributes>,
     UserAttributes {}
 
-const User = database.define<UserInstance>("user", {
-  id: {
-    primaryKey: true,
-    type: DataTypes.INTEGER.UNSIGNED,
+const User = database.define<UserInstance>(
+  "user",
+  {
+    id: {
+      primaryKey: true,
+      type: DataTypes.INTEGER.UNSIGNED,
+      autoIncrement: true,
+    },
+    name: DataTypes.STRING,
+    email: DataTypes.STRING,
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
   },
-  name: DataTypes.STRING,
-  email: DataTypes.STRING,
-  password: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-})
+  { createdAt: false, updatedAt: false }
+)
 
 export { User }
