@@ -2,10 +2,13 @@ import { Router, Request, Response, NextFunction } from "express"
 import { User } from "../models/user"
 import bcrypt from "bcrypt"
 import { config } from "dotenv"
+import formatedResponse from "../helpers/response"
+import jwt from "jsonwebtoken"
 
 config()
 
 const PASSWORD_SALTS = Number(process.env.PASSWORD_SALTS)
+const JWT_SECRET = process.env.JWT_KEY
 
 const router = Router()
 
@@ -14,15 +17,28 @@ router.get("/sign-in", async (request: Request, response: Response) => {
 
   if (email && password) {
     const user = await User.findOne({ where: { email: email } })
-    if (!user) return response.send("No email")
+    if (!user)
+      return response
+        .status(404)
+        .send(formatedResponse("Usuário não cadastrado", {}, {}))
 
     const userPassword = user.password.toString()
 
     const authored = bcrypt.compareSync(password, userPassword)
 
-    if (!authored) return response.send("incorrect password")
+    if (!authored)
+      return response
+        .status(404)
+        .send(formatedResponse("Credenciais incorretas", {}, {}))
 
-    return response.sendStatus(200)
+    user.password = null
+    const token = jwt.sign({ userId: user.id }, JWT_SECRET, {
+      expiresIn: "1 hour",
+    })
+
+    return response
+      .status(200)
+      .send(formatedResponse("Logado com sucesso", { user }, { token }))
   }
   return response.sendStatus(400)
 })
