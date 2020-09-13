@@ -1,7 +1,7 @@
 export default function formatedResponse(
   message: string,
-  data: Object,
-  metadata: Object
+  data?: Object,
+  metadata?: Object
 ) {
   const finalData = {
     ...data,

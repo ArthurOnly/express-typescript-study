@@ -20,7 +20,7 @@ router.get("/sign-in", async (request: Request, response: Response) => {
     if (!user)
       return response
         .status(404)
-        .send(formatedResponse("Usuário não cadastrado", {}, {}))
+        .send(formatedResponse("Usuário não cadastrado"))
 
     const userPassword = user.password.toString()
 
@@ -29,7 +29,7 @@ router.get("/sign-in", async (request: Request, response: Response) => {
     if (!authored)
       return response
         .status(404)
-        .send(formatedResponse("Credenciais incorretas", {}, {}))
+        .send(formatedResponse("Credenciais incorretas"))
 
     user.password = null
     const token = jwt.sign({ userId: user.id }, JWT_SECRET, {
@@ -44,24 +44,31 @@ router.get("/sign-in", async (request: Request, response: Response) => {
 })
 
 router.post("/sign-up", async (request: Request, response: Response) => {
-  const { username, password, email } = request.body
+  const { name, password, email } = request.body
 
-  if (username && password && email) {
+  if (name && password && email) {
     const alreadyRegister = await User.findOne({ where: { email } })
 
-    if (alreadyRegister) return response.status(400).send("Já registrado")
+    if (alreadyRegister)
+      return response
+        .status(400)
+        .send(formatedResponse("Usuário já registrado"))
 
     const cryptedPassword = bcrypt.hashSync(password, PASSWORD_SALTS)
 
     const user = await User.create({
       email,
-      name: username,
+      name: name,
       password: cryptedPassword,
     })
 
-    return response.status(201).send(user)
+    user.password = null
+
+    return response
+      .status(201)
+      .send(formatedResponse("Usuário criado", { user }))
   }
-  return response.sendStatus(400)
+  return response.status(400).send(formatedResponse("Dados incompletos"))
 })
 
 export { router as authController }
